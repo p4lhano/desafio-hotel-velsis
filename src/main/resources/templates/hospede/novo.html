@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta th:replace="~{fragments :: head}">
+
+<title>Hotel - Velsis</title>
+</head>
+<body class="container">
+	<div
+		class="d-flex flex-column justify-content-center align-items-center text-center">
+		<div style="border: 1px solid red; width: 50px; height: 50px"></div>
+		<form th:object="${hospedeForm}" th:action="@{/hospede/novo}"
+			method="post" class="card p-3 col-7 mt-5">
+			<div>
+				<input th:field="*{nome}" placeholder="Nome Cliente"
+					th:errorclass="is-invalid" class="form-control"> <small
+					class="invalid-feedback" th:errors="*{nome}"></small>
+			</div>
+			<div class="py-3">
+				<input th:field="*{documento}" placeholder="Documento Cliente"
+					th:errorclass="is-invalid" class="form-control"> <small
+					class="invalid-feedback" th:errors="*{documento}"></small>
+			</div>
+			<div>
+				<input th:field="*{telefone}" placeholder="Telefone Cliente"
+					th:errorclass="is-invalid" class="form-control"> <small
+					class="invalid-feedback" th:errors="*{telefone}"></small>
+			</div>
+			<button class="btn btn-primary mt-2" type="submit">Salvar</button>
+		</form>
+	</div>
+</body>
+</html>

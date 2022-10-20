@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta th:replace="~{fragments :: head}">
+<title>Hotel - Velsis</title>
+</head>
+<body class="container">
+	<div
+		class="d-flex flex-column justify-content-center align-items-center text-center">
+
+		<section class="card mt-4 border-primary col-sm-5 offset-sm-2 col-md-6 offset-md-0">
+			<header
+				class="card-header h5 text-start alert alert-primary p-2 px-3">Novo
+				CheckIn</header>
+			<div class="card-body pt-0 mt-0">
+				<form th:object="${checkInForm}" th:action="@{/checkin}"
+					method="post" class="p-3 pt-0 mt-0 col-lg-12">
+						<div class="d-flex justify-content-between flex-wrap">
+							<div class="col-md-6 col-lg-5">
+								<label for="dataEntrega">Data Entrada</label>
+		<!-- 						<input name="dataEntrega" type="date" class="form-control my-2" v-model="produto.dataEntrega" v-bind:class="{'is-invalid':produto.errors.dataEntrega!==''}"> -->
+								<input th:field="*{dataEntrada}" type="datetime-local" placeholder="Data Entrada" th:errorclass="is-invalid" class="form-control">
+								<small class="invalid-feedback" th:errors="*{dataEntrada}"></small>
+							</div>
+							<div class="col-md-6 col-lg-5">
+								<label for="dataEntrega">Data Saida</label>
+		<!-- 						<input name="dataEntrega" type="date" class="form-control my-2" v-model="produto.dataEntrega" v-bind:class="{'is-invalid':produto.errors.dataEntrega!==''}"> -->
+								<input th:field="*{dataSaida}" type="datetime-local" placeholder="Data Saida" th:errorclass="is-invalid" class="form-control">
+								<small class="invalid-feedback" th:errors="*{dataSaida}"></small>
+							</div>
+							<select th:field="*{hospedeId}" class="form-select mt-4 col-6" aria-label="Default select example">
+							  <option value="" th:disabled="disabled" th:selected="selected">---Selecione o hospede---</option>
+							  <option th:field="*{hospedeId}" th:each="hospede : ${hospedes}" th:value="${hospede.hospede.id}" th:text="${hospede.hospede.nome}"></option>
+							</select>
+							<div class="form-check mt-3">
+							  <input class="form-check-input" type="checkbox" th:field="*{adicionalVeiculo}">
+							  <label class="form-check-label" for="adicionalVeiculo">
+							    Possui veículo
+							  </label>
+							</div>
+						</div>
+					<button class="btn btn-success mt-2 col-3" type="submit">Salvar</button>
+				</form>
+			</div>
+		</section>
+
+
+		<section class="card mt-4 border-primary mt-4 border-primary col-sm-5 offset-sm-2 col-md-6 offset-md-0">
+			<header
+				class="card-header h5 text-start alert alert-primary p-2 px-3">Consultas</header>
+			<div class="card-body">
+				<h5 class="card-title">Special title treatment</h5>
+				<p class="card-text">With supporting text below as a natural
+					lead-in to additional content.</p>
+				<a href="#" class="btn btn-primary">Go somewhere</a>
+
+				<table class="table mt-2">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Nome</th>
+							<th scope="col">Total Gasto</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="hospede : ${hospedes}">
+							<th scope="row" th:text="${hospede.hospede.id}"></th>
+							<td th:text="${hospede.hospede.nome}"></td>
+							<td th:text="${#numbers.formatDecimal(hospede.total, 1, 2)}"></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+		</section>
+
+	</div>
+</body>
+</html>
