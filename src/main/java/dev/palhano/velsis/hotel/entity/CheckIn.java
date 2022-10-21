@@ -40,4 +40,14 @@ public class CheckIn {
 				+ dataSaida + ", adicionalVeiculo=" + adicionalVeiculo + ", total=" + total + "]";
 	}
 	
+	public LocalDateTime getDataEntrada() {
+		return dataEntrada;
+	}
+	public LocalDateTime getDataSaida() {
+		return dataSaida;
+	}
+	public Hospede getHospede() {
+		return hospede;
+	}
+	
 }

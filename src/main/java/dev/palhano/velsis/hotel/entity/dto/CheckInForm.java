@@ -11,8 +11,6 @@ public class CheckInForm {
 	@NotNull
 	@NotBlank
 	private String dataEntrada;
-	@NotNull
-	@NotBlank
 	private String dataSaida;
 	private boolean adicionalVeiculo;
 	public Long getHospedeId() {

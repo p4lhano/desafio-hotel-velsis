@@ -3,56 +3,49 @@
 <head>
 <meta th:replace="~{fragments :: head}">
 <title>Hotel - Velsis</title>
+<style type="text/css">
+
+li {
+	padding-right: 30px;
+}
+
+</style>
 </head>
 <body class="container">
 	<div
 		class="d-flex flex-column justify-content-center align-items-center text-center">
-		<a href="/hospede/novo" class="btn btn-primary">Cadastrar Hospede</a>
-		<section class="card mt-4 border-primary col-sm-5 offset-sm-2 col-md-6 offset-md-0">
-			<header
-				class="card-header h5 text-start alert alert-primary p-2 px-3">Novo
-				CheckIn</header>
-			<div class="card-body pt-0 mt-0">
-				<form th:object="${checkInForm}" th:action="@{/checkin}"
-					method="post" class="p-3 pt-0 mt-0 col-lg-12">
-						<div class="d-flex justify-content-between flex-wrap">
-							<div class="col-md-6 col-lg-5">
-								<label for="dataEntrega">Data Entrada</label>
-		<!-- 						<input name="dataEntrega" type="date" class="form-control my-2" v-model="produto.dataEntrega" v-bind:class="{'is-invalid':produto.errors.dataEntrega!==''}"> -->
-								<input th:field="*{dataEntrada}" type="datetime-local" placeholder="Data Entrada" th:errorclass="is-invalid" class="form-control">
-								<small class="invalid-feedback" th:errors="*{dataEntrada}"></small>
-							</div>
-							<div class="col-md-6 col-lg-5">
-								<label for="dataEntrega">Data Saida</label>
-		<!-- 						<input name="dataEntrega" type="date" class="form-control my-2" v-model="produto.dataEntrega" v-bind:class="{'is-invalid':produto.errors.dataEntrega!==''}"> -->
-								<input th:field="*{dataSaida}" type="datetime-local" placeholder="Data Saida" th:errorclass="is-invalid" class="form-control">
-								<small class="invalid-feedback" th:errors="*{dataSaida}"></small>
-							</div>
-							<select th:field="*{hospedeId}" class="form-select mt-4 col-6" aria-label="Default select example">
-							  <option value="" th:disabled="disabled" th:selected="selected">---Selecione o hospede---</option>
-							  <option th:field="*{hospedeId}" th:each="hospede : ${hospedes}" th:value="${hospede.hospede.id}" th:text="${hospede.hospede.nome} + ' - ' + ${hospede.hospede.documento}"></option>
-							</select>
-							<div class="form-check mt-3">
-							  <input class="form-check-input" type="checkbox" th:field="*{adicionalVeiculo}">
-							  <label class="form-check-label" for="adicionalVeiculo">
-							    Possui veículo
-							  </label>
-							</div>
-						</div>
-					<button class="btn btn-success mt-2 col-3" type="submit">Salvar</button>
-				</form>
-			</div>
-		</section>
-
+		
+		
+		<div th:replace="~{fragments :: cadastros-section}"></div>
 
 		<section class="card mt-4 border-primary mt-4 border-primary col-sm-5 offset-sm-2 col-md-6 offset-md-0">
 			<header
-				class="card-header h5 text-start alert alert-primary p-2 px-3">Consultas</header>
+				class="card-header h5 text-start alert alert-primary p-2 px-3 m-0">Consultas hos</header>
 			<div class="card-body">
-				<h5 class="card-title">Special title treatment</h5>
-				<p class="card-text">With supporting text below as a natural
-					lead-in to additional content.</p>
-				<a href="#" class="btn btn-primary">Go somewhere</a>
+				
+				<nav class="navbar navbar-expand-lg bg-light">
+				  <div class="container-fluid">
+				    <div class="collapse navbar-collapse" id="navbarNav">
+				      <ul class="navbar-nav">
+				        <li class="nav-item">
+				            <a class="nav-link btn" th:classappend="${status} == null ? 'btn-info'" href="/home">Todos</a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link btn" th:classappend="${status} == 'active' ? 'btn-info'" href="/home/active">Hospedados</a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link btn" th:classappend="${status} == 'no_active' ? 'btn-info'" href="/home/no_active">Não Hospedados</a>
+<!-- 						<a class="nav-link" th:classappend="${status} == 'entregue' ? 'active'" href="/home/entregue">Entregue</a> -->
+
+				        </li>
+				      </ul>
+				    </div>
+				  </div>
+				</nav>	
+				
+				
+				
+				
 
 				<table class="table mt-2">
 					<thead>
@@ -60,13 +53,35 @@
 							<th scope="col">#</th>
 							<th scope="col">Nome</th>
 							<th scope="col">Total Gasto</th>
+							<th scope="col">Ações</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="hospede : ${hospedes}">
-							<th scope="row" th:text="${hospede.hospede.id}"></th>
-							<td th:text="${hospede.hospede.nome}"></td>
-							<td th:text="${#numbers.formatDecimal(hospede.total, 1, 2)}"></td>
+						<tr th:each="tph : ${totalPorHospedes}">
+							<th scope="row" th:text="${tph.hospede.id}"></th>
+							<td th:text="${tph.hospede.nome}"></td>
+							<td th:text="${#numbers.formatDecimal(tph.total, 1, 2)} ?: '0,00'"></td>
+							<td class="p-0">
+								<ul class="list-group list-group-horizontal">
+									<li class="list-group-item pe-1 m-0 border-white">
+										<a href="#" class="material-symbols-outlined">
+										edit
+										</a>
+									</li>
+									<li class="list-group-item pe-1 m-0 border-white"
+									th:if="${tph.ultimoCheckin.dataSaida == null && tph.ultimoCheckin.dataEntrada != null}">
+										<a href="#" class="material-symbols-outlined">
+										check_circle
+										</a>
+									</li>
+									<li class="list-group-item pe-1 m-0 border-white"
+									th:if="${!(tph.ultimoCheckin.dataSaida == null && tph.ultimoCheckin.dataEntrada != null)}">
+										<a href="#" class="material-symbols-outlined">
+										H
+										</a>
+									</li>
+								</ul>
+							</td>
 						</tr>
 					</tbody>
 				</table>
