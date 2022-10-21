@@ -20,6 +20,7 @@ import dev.palhano.velsis.hotel.HospedagemService;
 import dev.palhano.velsis.hotel.entity.CheckIn;
 import dev.palhano.velsis.hotel.entity.Hospede;
 import dev.palhano.velsis.hotel.entity.dto.CheckInForm;
+import dev.palhano.velsis.hotel.entity.dto.HospedeForm;
 import dev.palhano.velsis.hotel.entity.mapper.CheckinMapper;
 import dev.palhano.velsis.hotel.entity.relatorios.TotalPorHospedeUltimo;
 import dev.palhano.velsis.hotel.repository.CheckinRepository;
@@ -45,7 +46,7 @@ public class CheckinController {
 	}
 	
 	@GetMapping
-	public String hospedarNow(@RequestParam Long user,Model request,CheckInForm checkInForm) {
+	public String hospedarNow(@RequestParam Long user,CheckInForm checkInForm) {
 		System.out.println("chegou em hospedarNow="+LocalDateTime.now().toString());
 		Hospede hospede = hospedeRepository.findById(user).orElseThrow(() -> new RuntimeException("Hospede não encontrado"));
 		
@@ -55,10 +56,9 @@ public class CheckinController {
 		checkInForm.setHospedeId(user);
 		checkInForm.setDataEntrada(LocalDateTime.now().format(formatter));
 		
-		populateHome(request);
 		
 		
-		return "home";
+		return "redirect:/home";
 	}
 	
 	@GetMapping("out/{id}")
@@ -78,31 +78,18 @@ public class CheckinController {
 
 		checkin.setTotal(hospedagemService.calcularTotalHospedagem(checkin)) ;
 		
-		populateHome(request);
 		
 		
 		return "redirect:/home";
 	}
-
-	/**
-	 * @param request
-	 */
-	private void populateHome(Model request) {
-		List<TotalPorHospedeUltimo> totalPorHospedes = hospedeRepository.totalPorHospedesUltimo();
-		totalPorHospedes.forEach(t -> t.setUltimoCheckinUseFind(checkinRepository));
-		request.addAttribute("totalPorHospedes", totalPorHospedes);
-		
-		List<Hospede> hospedes = hospedeRepository.findAll();
-		request.addAttribute("hospedes", hospedes);
-	}
 	
 	@PostMapping
 	@Transactional
-	public String newChelin(@Validated CheckInForm checkInForm,BindingResult result,Model request) {
+	public String newChelin(@Validated CheckInForm checkInForm,BindingResult result,Model request,HospedeForm hospedeForm) {
 		System.out.println(checkInForm);
 		
 		if(result.hasErrors())
-			return this.hospedeController.home(request, checkInForm);
+			return this.hospedeController.home(request, checkInForm,hospedeForm);
 		
 		CheckIn checkIn = this.checkinMapper.toCheckIn(checkInForm);
 		checkIn.setHospede(hospedeRepository.findById(checkIn.getHospede().getId()).orElseThrow(() -> new RuntimeException()));

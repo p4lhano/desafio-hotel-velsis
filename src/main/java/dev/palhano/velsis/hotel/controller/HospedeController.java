@@ -38,11 +38,10 @@ public class HospedeController {
 	}
 	
 	@GetMapping
-	public String home(Model request,CheckInForm checkInForm) {
+	public String home(Model request,CheckInForm checkInForm,HospedeForm hospedeForm) {
 		
 		List<TotalPorHospedeUltimo> totalPorHospedes = hospedeRepository.totalPorHospedesUltimo();
 		totalPorHospedes.forEach(t -> {
-			System.out.println(t);
 			t.setUltimoCheckinUseFind(checkinRepository);
 		});
 		request.addAttribute("totalPorHospedes", totalPorHospedes);
@@ -59,10 +58,11 @@ public class HospedeController {
 	}
 	
 	@PostMapping("novo")
-	public String newHospede(@Validated HospedeForm hospedeForm,BindingResult result) {
-		if(result.hasErrors())
-			return this.formNewHospede(hospedeForm);
-		
+	public String newHospede(@Validated HospedeForm hospedeForm,BindingResult result,Model request,CheckInForm checkInForm) {
+		if(result.hasErrors()) {
+//			return this.formNewHospede(hospedeForm);
+			return this.home(request, checkInForm, hospedeForm);
+		}
 		Hospede hospede = this.hospedeMapper.toHospede(hospedeForm);
 		
 		
