@@ -19,6 +19,9 @@ public class CheckIn {
 	private LocalDateTime dataSaida;
 	private boolean adicionalVeiculo;
 	private BigDecimal total;
+	public Long getId() {
+		return id;
+	}
 	public void setHospede(Hospede hospede) {
 		this.hospede = hospede;
 	}
@@ -30,6 +33,9 @@ public class CheckIn {
 	}
 	public void setAdicionalVeiculo(boolean adicionalVeiculo) {
 		this.adicionalVeiculo = adicionalVeiculo;
+	}
+	public boolean isAdicionalVeiculo() {
+		return adicionalVeiculo;
 	}
 	public void setTotal(BigDecimal total) {
 		this.total = total;
@@ -49,5 +55,7 @@ public class CheckIn {
 	public Hospede getHospede() {
 		return hospede;
 	}
+	
+	
 	
 }

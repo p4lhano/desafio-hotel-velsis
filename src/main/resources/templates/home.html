@@ -70,13 +70,13 @@ li {
 									</li>
 									<li class="list-group-item pe-1 m-0 border-white"
 									th:if="${tph.ultimoCheckin.dataSaida == null && tph.ultimoCheckin.dataEntrada != null}">
-										<a href="#" class="material-symbols-outlined">
+										<a th:href="@{'/checkin/out/' + ${tph.ultimoCheckin.id}}" class="material-symbols-outlined">
 										check_circle
 										</a>
 									</li>
 									<li class="list-group-item pe-1 m-0 border-white"
 									th:if="${!(tph.ultimoCheckin.dataSaida == null && tph.ultimoCheckin.dataEntrada != null)}">
-										<a href="#" class="material-symbols-outlined">
+										<a th:href="@{/checkin(user=${tph.hospede.id})}" class="material-symbols-outlined">
 										H
 										</a>
 									</li>

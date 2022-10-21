@@ -41,7 +41,10 @@ public class HospedeController {
 	public String home(Model request,CheckInForm checkInForm) {
 		
 		List<TotalPorHospedeUltimo> totalPorHospedes = hospedeRepository.totalPorHospedesUltimo();
-		totalPorHospedes.forEach(t -> t.setUltimoCheckinUseFind(checkinRepository));
+		totalPorHospedes.forEach(t -> {
+			System.out.println(t);
+			t.setUltimoCheckinUseFind(checkinRepository);
+		});
 		request.addAttribute("totalPorHospedes", totalPorHospedes);
 		
 		List<Hospede> hospedes = hospedeRepository.findAll();

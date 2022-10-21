@@ -1,6 +1,8 @@
 package dev.palhano.velsis.hotel.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -9,17 +11,17 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import dev.palhano.velsis.hotel.HospedagemService;
 import dev.palhano.velsis.hotel.entity.CheckIn;
 import dev.palhano.velsis.hotel.entity.Hospede;
 import dev.palhano.velsis.hotel.entity.dto.CheckInForm;
-import dev.palhano.velsis.hotel.entity.dto.HospedeForm;
 import dev.palhano.velsis.hotel.entity.mapper.CheckinMapper;
-import dev.palhano.velsis.hotel.entity.mapper.HospedeMapper;
-import dev.palhano.velsis.hotel.entity.relatorios.TotalPorHospede;
+import dev.palhano.velsis.hotel.entity.relatorios.TotalPorHospedeUltimo;
 import dev.palhano.velsis.hotel.repository.CheckinRepository;
 import dev.palhano.velsis.hotel.repository.HospedeRepository;
 
@@ -32,6 +34,7 @@ public class CheckinController {
 	private final CheckinRepository checkinRepository;
 	private final HospedeRepository hospedeRepository;
 	private final HospedagemService hospedagemService;
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 	
 	public CheckinController(CheckinRepository checkinRepository, HospedeController hospedeController, CheckinMapper checkinMapper,HospedeRepository hospedeRepository,HospedagemService hospedagemService) {
 		this.hospedeController = hospedeController;
@@ -41,9 +44,56 @@ public class CheckinController {
 		this.hospedagemService = hospedagemService;
 	}
 	
-	@GetMapping("novo")
-	public String formNewHospede(CheckInForm checkInForm) {
+	@GetMapping
+	public String hospedarNow(@RequestParam Long user,Model request,CheckInForm checkInForm) {
+		System.out.println("chegou em hospedarNow="+LocalDateTime.now().toString());
+		Hospede hospede = hospedeRepository.findById(user).orElseThrow(() -> new RuntimeException("Hospede não encontrado"));
+		
+		if(hospede.isEstaHospedado())
+			throw new RuntimeException("Hospede já esta hospedado");
+		
+		checkInForm.setHospedeId(user);
+		checkInForm.setDataEntrada(LocalDateTime.now().format(formatter));
+		
+		populateHome(request);
+		
+		
 		return "home";
+	}
+	
+	@GetMapping("out/{id}")
+	@Transactional
+	public String Checkout(@PathVariable Long id,Model request) {
+		
+		CheckIn checkin = checkinRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("CheckIn não encontrado"));
+		System.out.println(checkin);
+		if(checkin.getDataSaida() != null)
+			throw new RuntimeException("Já realizado checkin");
+		if(!checkin.getHospede().isEstaHospedado())
+			throw new RuntimeException("Erro no hospede, não estava hospedado");
+		
+		checkin.setDataSaida(LocalDateTime.now());
+		checkin.getHospede().setEstaHospedado(false);
+
+		checkin.setTotal(hospedagemService.calcularTotalHospedagem(checkin)) ;
+		
+		populateHome(request);
+		
+		
+		return "redirect:/home";
+	}
+
+	/**
+	 * @param request
+	 */
+	private void populateHome(Model request) {
+		List<TotalPorHospedeUltimo> totalPorHospedes = hospedeRepository.totalPorHospedesUltimo();
+		totalPorHospedes.forEach(t -> t.setUltimoCheckinUseFind(checkinRepository));
+		request.addAttribute("totalPorHospedes", totalPorHospedes);
+		
+		List<Hospede> hospedes = hospedeRepository.findAll();
+		request.addAttribute("hospedes", hospedes);
 	}
 	
 	@PostMapping
