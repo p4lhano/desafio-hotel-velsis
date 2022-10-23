@@ -2,7 +2,6 @@ package dev.palhano.velsis.hotel.entity.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 
 public class HospedeForm {
 	@NotNull

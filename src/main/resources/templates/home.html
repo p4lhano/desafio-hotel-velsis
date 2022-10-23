@@ -11,7 +11,10 @@ li {
 
 </style>
 </head>
-<body class="container">
+<body>
+	<div th:if="${alert} != null" th:text="${alert}" class="alert alert-primary m-0 py-2">
+		Atenção: O valor finalizou em R$ 200,00
+	</div>
 	<div
 		class="d-flex flex-column justify-content-center align-items-center text-center">
 		
@@ -64,19 +67,22 @@ li {
 							<td class="p-0">
 								<ul class="list-group list-group-horizontal">
 									<li class="list-group-item pe-1 m-0 border-white">
-										<a href="#" class="material-symbols-outlined">
+										<a href="#" class="material-symbols-outlined"
+										title="Editar Cadastro">
 										edit
 										</a>
 									</li>
 									<li class="list-group-item pe-1 m-0 border-white"
 									th:if="${tph.ultimoCheckin.dataSaida == null && tph.ultimoCheckin.dataEntrada != null}">
-										<a th:href="@{'/checkin/out/' + ${tph.ultimoCheckin.id}}" class="material-symbols-outlined">
+										<a th:href="@{'/checkin/out/' + ${tph.ultimoCheckin.id}}" class="material-symbols-outlined"
+										title="Finalizar hospegagem agora!">
 										check_circle
 										</a>
 									</li>
 									<li class="list-group-item pe-1 m-0 border-white"
 									th:if="${!(tph.ultimoCheckin.dataSaida == null && tph.ultimoCheckin.dataEntrada != null)}">
-										<a th:href="@{/checkin(user=${tph.hospede.id})}" class="material-symbols-outlined">
+										<a th:href="@{/checkin(user=${tph.hospede.id})}" class="material-symbols-outlined"
+										title="Hospedar">
 										H
 										</a>
 									</li>

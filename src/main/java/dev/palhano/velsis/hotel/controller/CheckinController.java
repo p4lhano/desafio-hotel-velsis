@@ -3,7 +3,6 @@ package dev.palhano.velsis.hotel.controller;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import dev.palhano.velsis.hotel.HospedagemService;
 import dev.palhano.velsis.hotel.entity.CheckIn;
 import dev.palhano.velsis.hotel.entity.Hospede;
 import dev.palhano.velsis.hotel.entity.dto.CheckInForm;
 import dev.palhano.velsis.hotel.entity.dto.HospedeForm;
 import dev.palhano.velsis.hotel.entity.mapper.CheckinMapper;
-import dev.palhano.velsis.hotel.entity.relatorios.TotalPorHospedeUltimo;
 import dev.palhano.velsis.hotel.repository.CheckinRepository;
 import dev.palhano.velsis.hotel.repository.HospedeRepository;
+import dev.palhano.velsis.hotel.service.HospedagemService;
 
 @Controller
 @RequestMapping(value={"/checkin"})
@@ -46,8 +44,7 @@ public class CheckinController {
 	}
 	
 	@GetMapping
-	public String hospedarNow(@RequestParam Long user,CheckInForm checkInForm) {
-		System.out.println("chegou em hospedarNow="+LocalDateTime.now().toString());
+	public String hospedarNow(@RequestParam Long user,CheckInForm checkInForm,HospedeForm hospedeForm,Model request) {
 		Hospede hospede = hospedeRepository.findById(user).orElseThrow(() -> new RuntimeException("Hospede não encontrado"));
 		
 		if(hospede.isEstaHospedado())
@@ -56,14 +53,14 @@ public class CheckinController {
 		checkInForm.setHospedeId(user);
 		checkInForm.setDataEntrada(LocalDateTime.now().format(formatter));
 		
+		hospedeController.populate(request);
 		
-		
-		return "redirect:/home";
+		return "/home";
 	}
 	
 	@GetMapping("out/{id}")
 	@Transactional
-	public String Checkout(@PathVariable Long id,Model request) {
+	public String Checkout(@PathVariable Long id,Model request,HospedeForm hospedeForm,CheckInForm checkInForm) {
 		
 		CheckIn checkin = checkinRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("CheckIn não encontrado"));
@@ -78,9 +75,12 @@ public class CheckinController {
 
 		checkin.setTotal(hospedagemService.calcularTotalHospedagem(checkin)) ;
 		
+		request.addAttribute("alert", "Total da hospedagem de "+checkin.getHospede().getNome()+" é R$ "+checkin.getTotal());
+        
 		
+		hospedeController.populate(request);
 		
-		return "redirect:/home";
+		return "/home";
 	}
 	
 	@PostMapping
@@ -107,8 +107,9 @@ public class CheckinController {
 		BigDecimal total = hospedagemService.calcularTotalHospedagem(checkIn);
 		checkIn.setTotal(total);
 		// TODO criar na view um rececptor para alertas genéricos com o nome alert
+		hospedeController.populate(request);
 		request.addAttribute("alert", "Total da hospedagem de "+checkIn.getHospede().getNome()+" é R$ "+total);
-		return "redirect:/home";
+		return "/home";
 	}
 	
 }

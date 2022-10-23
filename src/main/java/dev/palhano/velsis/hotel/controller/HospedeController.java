@@ -1,6 +1,5 @@
 package dev.palhano.velsis.hotel.controller;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,6 @@ import dev.palhano.velsis.hotel.entity.Hospede;
 import dev.palhano.velsis.hotel.entity.dto.CheckInForm;
 import dev.palhano.velsis.hotel.entity.dto.HospedeForm;
 import dev.palhano.velsis.hotel.entity.mapper.HospedeMapper;
-import dev.palhano.velsis.hotel.entity.relatorios.TotalPorHospede;
 import dev.palhano.velsis.hotel.entity.relatorios.TotalPorHospedeUltimo;
 import dev.palhano.velsis.hotel.entity.types.StatusEnum;
 import dev.palhano.velsis.hotel.repository.CheckinRepository;
@@ -40,7 +38,13 @@ public class HospedeController {
 	@GetMapping
 	public String home(Model request,CheckInForm checkInForm,HospedeForm hospedeForm) {
 		
-		List<TotalPorHospedeUltimo> totalPorHospedes = hospedeRepository.totalPorHospedesUltimo();
+		populate(request);
+		
+		return "home";
+	}
+
+    protected void populate(Model request) {
+        List<TotalPorHospedeUltimo> totalPorHospedes = hospedeRepository.totalPorHospedesUltimo();
 		totalPorHospedes.forEach(t -> {
 			t.setUltimoCheckinUseFind(checkinRepository);
 		});
@@ -48,9 +52,7 @@ public class HospedeController {
 		
 		List<Hospede> hospedes = hospedeRepository.findAll();
 		request.addAttribute("hospedes", hospedes);
-		
-		return "home";
-	}
+    }
 	
 	@GetMapping("novo")
 	public String formNewHospede(HospedeForm hospedeForm) {
@@ -74,9 +76,7 @@ public class HospedeController {
 
 	
 	@GetMapping("{status}")
-	public String findStatus(@PathVariable String status, Model request,CheckInForm checkInForm) {
-		
-		System.out.println("Recebeu: "+status);
+	public String findStatus(@PathVariable String status, Model request,CheckInForm checkInForm,HospedeForm hospedeForm) {
 		
 		List<TotalPorHospedeUltimo> hospedesFind = StatusEnum.valueOf(status.toUpperCase()).getHospedes(hospedeRepository);
 		hospedesFind.forEach(t -> t.setUltimoCheckinUseFind(checkinRepository));

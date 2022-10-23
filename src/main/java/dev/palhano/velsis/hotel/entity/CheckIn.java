@@ -56,6 +56,8 @@ public class CheckIn {
 		return hospede;
 	}
 	
-	
+	public BigDecimal getTotal() {
+        return total;
+    }
 	
 }

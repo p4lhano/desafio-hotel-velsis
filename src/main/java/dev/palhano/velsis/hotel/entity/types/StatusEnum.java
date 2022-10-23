@@ -9,7 +9,7 @@ public enum StatusEnum {
 	ACTIVE {
 		@Override
 		public List<TotalPorHospedeUltimo> getHospedes(HospedeRepository repository) {
-			return repository.totalPorHospedesUltimoAtivos();
+			return repository.totalPorHospedesUltimoStatus(true);
 		}
 	},NO_ACTIVE {
 		@Override

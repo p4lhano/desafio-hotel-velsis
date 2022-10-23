@@ -1,4 +1,4 @@
-package dev.palhano.velsis.hotel;
+package dev.palhano.velsis.hotel.service;
 
 import java.math.BigDecimal;
 import java.time.DayOfWeek;

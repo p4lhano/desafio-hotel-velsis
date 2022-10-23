@@ -53,7 +53,6 @@ body{
 			<div class="d-flex justify-content-between flex-wrap">
 				<div class="col-md-6 col-lg-5">
 					<label for="dataEntrega">Data Entrada</label>
-					<!-- 						<input name="dataEntrega" type="date" class="form-control my-2" v-model="produto.dataEntrega" v-bind:class="{'is-invalid':produto.errors.dataEntrega!==''}"> -->
 					<input th:field="*{dataEntrada}" type="datetime-local"
 						placeholder="Data Entrada" th:errorclass="is-invalid"
 						class="form-control"> <small class="invalid-feedback"
@@ -61,7 +60,6 @@ body{
 				</div>
 				<div class="col-md-6 col-lg-5">
 					<label for="dataEntrega">Data Saida</label>
-					<!-- 						<input name="dataEntrega" type="date" class="form-control my-2" v-model="produto.dataEntrega" v-bind:class="{'is-invalid':produto.errors.dataEntrega!==''}"> -->
 					<input th:field="*{dataSaida}" type="datetime-local"
 						placeholder="Data Saida" th:errorclass="is-invalid"
 						class="form-control"> <small class="invalid-feedback"
@@ -83,15 +81,15 @@ body{
 			</div>
 			<div class="d-flex flex-nowrap justify-content-between">
 				<button class="btn btn-success mt-2 col-3" type="submit">Salvar</button>
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-					Open modal
+				<button type="button" class="btn btn-primary mt-2 d-flex" data-bs-toggle="modal" data-bs-target="#myModal">
+					Novo Hospede
 				</button>
-				<a href="/hospede/novo" class="btn btn-primary mt-2 d-flex text-nowrap">Novo Hospede</a>
+<!-- 				<a href="/hospede/novo" class="btn btn-primary mt-2 d-flex text-nowrap">Novo Hospede</a> -->
 			</div>
 		</form>
 	</div>
 	<!-- The Modal -->
-	<div class="modal" id="myModal">
+	<div class="modal fade" id="myModal">
 		<div class="modal-dialog ">
 		<div class="modal-content ">
 			<form th:object="${hospedeForm}" th:action="@{/hospede/novo}" method="post" class="card p-3 pb-1 pt-0 col-12">
@@ -128,8 +126,9 @@ body{
 					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 				</div>
 					
-				<script th:inline="javascript" th:if="${#fields.hasAnyErrors('hospedeForm')}">
-				
+				<script th:inline="javascript" th:if="${#fields.hasAnyErrors()}">
+					//Função que exige a abertura do modal
+					//Só ira rodar quando exitir erros no cadastro do hospede
 					 $(window).ready(function(){
 						$("#myModal").modal('show');
 					});
